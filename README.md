@@ -66,6 +66,7 @@ The following are the population characteristics in the study.
 | GLU, mean (SD), mmol/L        | 5.48 (1.59)              | 5.12 (1.24)             |
 | CRP, mean (SD), mg/L         | 4.07 (5.67)              | 2.61 (4.36)             |
 | Log CRP, mean (SD), mg/L         | 1.26 (0.79)              | 1.00 (0.65)             |
+
 Log CRP is calculated as the natural logarithm of (CRP + 1). <br>
 
 <br>
@@ -83,4 +84,5 @@ Log CRP is calculated as the natural logarithm of (CRP + 1). <br>
 | GLU, mean (SD), mmol/L        | 5.99 (2.00)             | 5.36 (1.80)             | 6.2 (1.85)              |
 | CRP, mean (SD), mg/L         | 2.72 (6.96)             | 3.28 (7.11)             | 4.03 (8.39)             |
 | logCRP, mean (SD), mg/L         | 0.94 (0.68)             | 1.00 (0.78)             | 1.29 (0.64)             |
+
 Log CRP is calculated as the natural logarithm of (CRP + 1). <br>
