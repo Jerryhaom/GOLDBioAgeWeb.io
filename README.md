@@ -1,6 +1,6 @@
 <p align="center"><strong>Information for GOLD and Light BioAge calculation </strong></p>
 
-we independently fitted the GOLD and Light BioAge models to the NHANES and UKB datasets, with coefficients provided for each (**Table 1**). Similarly, benchmark models (KDM, PhenoAge) were developed within each dataset (NHANES and UKB, respectively). Additionally, we develop a Chinese population-specific version of Light BioAge (**Table 2**) using CHARLS 2011 and 2015 wave data, adjusted for population differences. This model is publicly available to enable further investigation of Light BioAge's relationship to other health factors, using the epidemiological data of CHARLS.
+We independently fitted the GOLD and Light BioAge models to the NHANES and UKB datasets, with coefficients provided for each (**Table 1**). Similarly, benchmark models (KDM, PhenoAge) were developed within each dataset (NHANES and UKB, respectively). Additionally, we develop a Chinese population-specific version of Light BioAge (**Table 2**) using CHARLS 2011 and 2015 wave data, adjusted for population differences. This model is publicly available to enable further investigation of Light BioAge's relationship to other health factors, using the epidemiological data of CHARLS.
 
 **Table 1.** Coefficients for calculating GOLD BioAge based on NHANES and UKB datasets.
 
