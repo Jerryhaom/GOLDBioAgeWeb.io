@@ -17,7 +17,7 @@ The GOLD BioAge algorithm can be applied to independent biomarkers or datasets u
 | ALP      | Liver       | U/L                 | 0.0260                 | 0.0385              |
 | LYM%     | Immune      | %                   | 0.2032                | -0.1899             |
 | WBC      | Immune      | 1000 cells/uL       | 0.4459                | 0.9120              |
-| GGT      | Kidney      | U/L                 | -0.0608               | 0.1007              |
+| GGT      | Liver       | U/L                 | -0.0608               | 0.1007              |
 | Constant (β0) |        |                     | -53.6287              | -78.6519            |
 
 <br>
