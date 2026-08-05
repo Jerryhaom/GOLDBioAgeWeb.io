@@ -196,7 +196,7 @@
         const formulas = {
             nhanes: {
                 gold: (v) => v.age +5.2691*v.crea +0.5797*v.glu +0.3389*v.mcv +2.6445*v.rdw 
-                          -4.7358*v.alb +0.0260*v.alp -0.2032*v.lym +0.4459*v.wbc +0.0608*v.ggt -53.62873,
+                          -4.7358*v.alb +0.0260*v.alp +0.2032*v.lym +0.4459*v.wbc -0.0608*v.ggt -53.62873,
                 light: (v) => v.age +8.3313*v.crea +0.8270*v.glu +5.7305*Math.log(v.crp+1) -13.5298
             },
             ukb: {
