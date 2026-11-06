@@ -15,10 +15,22 @@ The GOLD BioAge algorithm can be applied to independent biomarkers or datasets u
 | RDW      | Erythrocyte | %                   | 2.6445                | 3.3162              |
 | ALB      | Liver       | g/dL                | -4.7358               | -5.0793             |
 | ALP      | Liver       | U/L                 | 0.0260                 | 0.0385              |
-| LYM%     | Immune      | %                   | 0.2032                | -0.1899             |
+| LYM%     | Immune      | %                   | -0.2032               | -0.1899             |
 | WBC      | Immune      | 1000 cells/uL       | 0.4459                | 0.9120              |
-| GGT      | Liver       | U/L                 | -0.0608               | 0.1007              |
+| GGT      | Liver       | U/L                 | 0.0608                | 0.1007              |
 | Constant (β0) |        |                     | -53.6287              | -78.6519            |
+
+Table 1 displays coefficients rounded to four decimal places. The web calculator uses the following NHANES GOLD coefficients at the supplied precision:
+
+```text
+GOLD BioAge = age + 5.26909180 × CREA + 0.57969768 × GLU
+             + 0.33888497 × MCV + 2.64452031 × RDW
+             − 4.73575224 × ALB + 0.02604091 × ALP
+             − 0.20318306 × LYM% + 0.44588830 × WBC
+             + 0.06075152 × GGT − 53.62873
+```
+
+Use the units listed in Table 1 and enter LYM% as a percentage (for example, 30 for 30%).
 
 <br>
 <br>
@@ -35,6 +47,8 @@ The GOLD BioAge algorithm can be applied to independent biomarkers or datasets u
 
 Due to its non-normal distribution, CRP was log-transformed. Log CRP was calculated as ln(CRP + 1). <br>
 Note that CRP units differ: mg/dL in NHANES versus mg/L in UKB and CHARLS. For high-sensitivity CRP, we recommend using the UKB-derived coefficients.
+
+The web calculator accepts CRP in mg/dL for both datasets and converts it to mg/L (×10) before applying the UKB Light formula.
 
 <br>
 Contact Information: haombio@gmail.com <br>

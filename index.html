@@ -195,8 +195,8 @@
         // Configuration Objects
         const formulas = {
             nhanes: {
-                gold: (v) => v.age +5.2691*v.crea +0.5797*v.glu +0.3389*v.mcv +2.6445*v.rdw 
-                          -4.7358*v.alb +0.0260*v.alp +0.2032*v.lym +0.4459*v.wbc -0.0608*v.ggt -53.62873,
+                gold: (v) => v.age +5.26909180*v.crea +0.57969768*v.glu +0.33888497*v.mcv +2.64452031*v.rdw
+                          -4.73575224*v.alb +0.02604091*v.alp -0.20318306*v.lym +0.44588830*v.wbc +0.06075152*v.ggt -53.62873,
                 light: (v) => v.age +8.3313*v.crea +0.8270*v.glu +5.7305*Math.log(v.crp+1) -13.5298
             },
             ukb: {
@@ -232,6 +232,13 @@
             nhanes: { gold: {}, light: {} },
             ukb: { gold: {}, light: {} }
         };
+        let activeDataset = document.getElementById('datasetSelect').value;
+        let activeModel = document.getElementById('modelSelect').value;
+
+        function clearResult() {
+            document.getElementById('bioAgeResult').textContent = '--';
+            document.getElementById('resultSection').classList.remove('show');
+        }
 
         // Dynamic Input Generation
         function generateInputs() {
@@ -241,17 +248,20 @@
             const container = document.getElementById('inputContainer');
             
             // Save current values
-            fields.forEach(field => {
+            fieldConfig[activeModel].forEach(field => {
                 const input = document.getElementById(field.id);
-                if (input) inputValues[dataset][model][field.id] = input.value;
+                if (input) inputValues[activeDataset][activeModel][field.id] = input.value;
             });
+            activeDataset = dataset;
+            activeModel = model;
+            clearResult();
 
             // Generate new inputs
             container.innerHTML = fields.map(field => `
                 <div class="input-group">
-                    <label>${field.label}</label>
-                    <input type="number" step="0.01" id="${field.id}" 
-                           value="${inputValues[dataset][model][field.id] || ''}"
+                    <label for="${field.id}">${field.label}</label>
+                    <input type="number" step="any" min="0" ${field.id === 'lym' ? 'max="100"' : ''} required id="${field.id}"
+                           value="${inputValues[dataset][model][field.id] ?? ''}"
                            placeholder="Enter ${field.label}">
                     <div class="reference-range">
                         ${field.unit} | Normal: ${field.range}
@@ -275,24 +285,28 @@
             e.preventDefault();
             calculateIfValid();
         });
+        document.getElementById('bioAgeForm').addEventListener('input', clearResult);
 
         // Calculation Logic
         function calculateIfValid() {
             const dataset = document.getElementById('datasetSelect').value;
             const model = document.getElementById('modelSelect').value;
-            const inputs = Array.from(document.querySelectorAll('input'));
+            const form = document.getElementById('bioAgeForm');
+            const inputs = fieldConfig[model].map(field => document.getElementById(field.id));
             
             // Validate inputs
             const values = {};
-            let isValid = true;
+            let isValid = form.checkValidity();
             
             inputs.forEach(input => {
-                values[input.id] = parseFloat(input.value) || 0;
-                if (!input.value) isValid = false;
+                values[input.id] = input.valueAsNumber;
+                if (!Number.isFinite(values[input.id])) isValid = false;
             });
 
+            clearResult();
             if (isValid) {
                 const result = formulas[dataset][model](values);
+                if (!Number.isFinite(result)) return;
                 document.getElementById('bioAgeResult').textContent = result.toFixed(1);
                 document.getElementById('resultSection').classList.add('show');
             }
