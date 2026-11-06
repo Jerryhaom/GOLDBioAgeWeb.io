@@ -46,7 +46,7 @@ Use the units listed in Table 1 and enter LYM% as a percentage (for example, 30 
 | Constant (β0) |             |          | -13.5298              |        | -20.1395            |        | -16.7562                |
 
 Due to its non-normal distribution, CRP was log-transformed. Log CRP was calculated as ln(CRP + 1). <br>
-Note that CRP units differ: mg/dL in NHANES versus mg/L in UKB and CHARLS. For high-sensitivity CRP, we recommend using the UKB-derived coefficients.
+Note that CRP units differ: mg/dL in NHANES versus mg/L in UKB and CHARLS. Choose a cohort-specific model with its complete coefficient set, transformation, and intercept; an assay label alone does not establish transportability to a new population.
 
 The web calculator accepts CRP in mg/dL for both datasets and converts it to mg/L (×10) before applying the UKB Light formula.
 
@@ -81,9 +81,9 @@ The following are the population characteristics in the study.
 | CREA, mean (SD), mg/dL        | 0.88 (0.26)              | 0.82 (0.21)             |
 | GLU, mean (SD), mmol/L        | 5.48 (1.59)              | 5.12 (1.24)             |
 | CRP, mean (SD), mg/L         | 4.07 (5.67)              | 2.61 (4.36)             |
-| Log CRP, mean (SD), mg/L         | 1.26 (0.79)              | 1.00 (0.65)             |
+| ln(1 + CRP in mg/L), mean (SD), unitless         | 1.26 (0.79)              | 1.00 (0.65)             |
 
-Log CRP is calculated as the natural logarithm of (CRP + 1). <br>
+The descriptive log values in this table use ln(1 + CRP in mg/L), a unitless transformed value. For **NHANES Light scoring**, instead use ln(1 + CRP in mg/dL), as specified in Table 2. These are different numerical variables. <br>
 
 <br>
 
@@ -99,6 +99,22 @@ Log CRP is calculated as the natural logarithm of (CRP + 1). <br>
 | CREA, mean (SD), mg/dL        | 0.79 (0.26)             | 0.94 (0.33)             | 0.64 (0.20)             |
 | GLU, mean (SD), mmol/L        | 5.99 (2.00)             | 5.36 (1.80)             | 6.2 (1.85)              |
 | CRP, mean (SD), mg/L         | 2.72 (6.96)             | 3.28 (7.11)             | 4.03 (8.39)             |
-| logCRP, mean (SD), mg/L         | 0.94 (0.68)             | 1.00 (0.78)             | 1.29 (0.64)             |
+| ln(1 + CRP in mg/L), mean (SD), unitless         | 0.94 (0.68)             | 1.00 (0.78)             | 1.29 (0.64)             |
 
-Log CRP is calculated as the natural logarithm of (CRP + 1). <br>
+The descriptive log values use ln(1 + CRP in mg/L); the transformed values are unitless. <br>
+
+
+**Data consistency note for Supplementary Table 2:** the supplied CHARLS sex counts sum to 17,154, whereas the column total is 17,163. The supplied RuLAS sex counts sum to 1,787, whereas the column total is 1,785; the percentages also do not reproduce those counts using that total. These source summary values are retained pending confirmation from the underlying cohort records. They do not enter the BioAge calculation. The table must not be treated as an independently verified participant count.
+
+## Calculation checks and R examples
+
+For age 50, creatinine 1 mg/dL, glucose 5 mmol/L, MCV 90 fL, RDW 13%, albumin 4 g/dL, ALP 80 U/L, lymphocytes 30%, WBC 7 (1000 cells/uL), GGT 25 U/L, and CRP 0.3 mg/dL (= 3 mg/L):
+
+| Coefficient dataset | GOLD (years) | Light (years) |
+|---|---:|---:|
+| NHANES | 51.10203967 | 50.43997842 |
+| UKB | 50.74720000 | 53.38262256 |
+
+The calculator rounds the result to one decimal. It applies existing cohort coefficients; it does not fit a model. The R package includes [all five original coefficient sets](https://github.com/Jerryhaom/GOLDBioAge/blob/main/Coefficients.md), [equations beside R code](https://github.com/Jerryhaom/GOLDBioAge/blob/main/docs/mathematics-and-code.md), and a [consistency audit](https://github.com/Jerryhaom/GOLDBioAge/blob/main/docs/consistency-audit.md).
+
+Run `node --test tests/calculator.test.cjs` to verify all four calculator formulas, GOLD/Light tables, CRP transformations, and the frozen R reference cases. When the R repository is checked out alongside this repository, also run `node tests/cross-repository.cjs` to compare the calculator against the packaged coefficient reference.

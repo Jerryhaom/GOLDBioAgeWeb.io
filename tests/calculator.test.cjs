@@ -74,3 +74,38 @@ test('Table 1 agrees with each GOLD formula at four decimal places', () => {
     }
     assert.equal(checked, 22);
 });
+
+test('Table 2 agrees with both LIGHT formulas, using the correct raw CRP units', () => {
+    const table = readFileSync(join(root, 'README.md'), 'utf8')
+        .split('**Table 2.**')[1].split('Due to its non-normal')[0];
+    const fields = { Age: 'age', CREA: 'crea', GLU: 'glu', 'Log CRP': 'crp' };
+    const zero = { age: 0, crea: 0, glu: 0, crp: 0 };
+    let checked = 0;
+    for (const row of table.split('\n').filter(line => line.startsWith('|'))) {
+        const cells = row.split('|').map(cell => cell.trim());
+        const field = fields[cells[1]];
+        if (!field && cells[1] !== 'Constant (β0)') continue;
+        for (const [dataset, column] of [['nhanes', 4], ['ukb', 6]]) {
+            const baseline = formulas[dataset].light(zero);
+            // Make the model's transformed predictor exactly 1, starting in UI mg/dL.
+            const value = field === 'crp' ? Math.expm1(1) / (dataset === 'ukb' ? 10 : 1) : 1;
+            const actual = field
+                ? formulas[dataset].light({ ...zero, [field]: value }) - baseline : baseline;
+            close(actual, Number(cells[column]));
+            checked++;
+        }
+    }
+    assert.equal(checked, 10);
+});
+
+test('LIGHT: natural log, small positive CRP, and UKB factor ten are retained', () => {
+    for (const dataset of ['nhanes', 'ukb']) {
+        const coefficient = dataset === 'nhanes' ? 5.7305 : 4.1689;
+        const factor = dataset === 'nhanes' ? 1 : 10;
+        for (const crp of [1e-12, 0.01, 0.3, 3, 100]) {
+            const baseline = formulas[dataset].light({ ...lightInputs, crp: 0 });
+            close(formulas[dataset].light({ ...lightInputs, crp }) - baseline,
+                  coefficient * Math.log1p(factor * crp));
+        }
+    }
+});

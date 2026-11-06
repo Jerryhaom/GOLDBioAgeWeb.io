@@ -13,8 +13,7 @@
         }
 
         body {
-            background: linear-gradient(rgba(255,255,255,0.9), rgba(255,255,255,0.9)),
-                        url('Ai-image.jpg') center/cover;
+            background: linear-gradient(135deg, #f4f8fb, #eaf2f8);
             font-family: 'Segoe UI', system-ui, sans-serif;
             min-height: 100vh;
         }
@@ -151,15 +150,18 @@
         
         <!-- Version Selectors -->
         <div class="version-switcher">
-            <select id="datasetSelect" class="form-select">
+            <select id="datasetSelect" class="form-select" aria-label="Coefficient dataset">
                 <option value="nhanes">NHANES Dataset</option>
                 <option value="ukb">UK Biobank Dataset</option>
             </select>
-            <select id="modelSelect" class="form-select">
+            <select id="modelSelect" class="form-select" aria-label="BioAge model">
                 <option value="gold">GOLD Model</option>
                 <option value="light">LIGHT Model</option>
             </select>
         </div>
+
+        <p id="modelNote" aria-live="polite"></p>
+        <p><a href="https://github.com/Jerryhaom/GOLDBioAgeWeb.io/blob/main/README.md">Coefficient tables and input units</a> · <a href="https://github.com/Jerryhaom/GOLDBioAge/blob/main/docs/mathematics-and-code.md">Equations and R calculation</a></p>
 
         <!-- Dynamic Input Fields -->
         <form id="bioAgeForm">
@@ -184,8 +186,8 @@
         <h2>Abbreviations & References</h2>
         <ol>
             <li>MCV: mean cell volume, RDW: red cell distribution width, ALP: alkaline phosphatase, WBC: white blood cell count, GGT: gamma glutamyl transferase, CRP: C-reactive protein.</li>
-            <li>Citation: Meng Hao et al. Gompertz Law-Based Biological Age (GOLD BioAge): a simple and practical measurement of biological aging to capture morbidity and mortality risks. doi: 10.1101/2024.11.14.24317305.</li>
-            <li>More information: https://github.com/Jerryhaom/GOLDBioAgeWeb.io </li>
+            <li>Citation: Hao M. et al. Gompertz Law-Based Biological Age (GOLD BioAge): A Simple and Practical Measurement of Biological Ageing to Capture Morbidity and Mortality Risks. <em>Advanced Science</em> (2025), e01765. <a href="https://doi.org/10.1002/advs.202501765">doi:10.1002/advs.202501765</a>.</li>
+            <li>More information: <a href="https://github.com/Jerryhaom/GOLDBioAgeWeb.io">calculator repository</a> · <a href="https://github.com/Jerryhaom/GOLDBioAge">R package and tutorials</a>.</li>
             <li>Email: haombio@gmail.com  </li>
         </ol>
     </div>
@@ -197,12 +199,12 @@
             nhanes: {
                 gold: (v) => v.age +5.26909180*v.crea +0.57969768*v.glu +0.33888497*v.mcv +2.64452031*v.rdw
                           -4.73575224*v.alb +0.02604091*v.alp -0.20318306*v.lym +0.44588830*v.wbc +0.06075152*v.ggt -53.62873,
-                light: (v) => v.age +8.3313*v.crea +0.8270*v.glu +5.7305*Math.log(v.crp+1) -13.5298
+                light: (v) => v.age +8.3313*v.crea +0.8270*v.glu +5.7305*Math.log1p(v.crp) -13.5298
             },
             ukb: {
                 gold: (v) => v.age +5.3832*v.crea +1.4168*v.glu +0.4206*v.mcv +3.3162*v.rdw 
                           -5.0793*v.alb +0.0385*v.alp -0.1899*v.lym +0.9120*v.wbc +0.1007*v.ggt -78.6519,
-                light: (v) => v.age +9.0873*v.crea +1.7311*v.glu +4.1689*Math.log(v.crp*10+1) -20.1395
+                light: (v) => v.age +9.0873*v.crea +1.7311*v.glu +4.1689*Math.log1p(v.crp*10) -20.1395
             }
         };
 
@@ -223,7 +225,7 @@
                 {id: 'age', label: 'Age', unit: 'years', range: '≥20'},
                 {id: 'crea', label: 'Creatinine', unit: 'mg/dL', range: '0.6-1.3'},
                 {id: 'glu', label: 'Glucose', unit: 'mmol/L', range: '3.9-6.1'},
-                {id: 'crp', label: 'CRP', unit: 'mg/dL', range: '0-3'}
+                {id: 'crp', label: 'CRP', unit: 'mg/dL'}
             ]
         };
 
@@ -255,6 +257,13 @@
             activeDataset = dataset;
             activeModel = model;
             clearResult();
+            const cohortName = dataset === 'nhanes' ? 'NHANES' : 'UK Biobank';
+            document.getElementById('modelNote').textContent = model === 'light'
+                ? `${cohortName} Light: enter raw CRP in mg/dL, without taking a logarithm. ` +
+                  (dataset === 'ukb'
+                    ? 'The calculator converts CRP to mg/L (×10), then uses ln(1 + CRP).'
+                    : 'The calculator uses ln(1 + CRP in mg/dL).')
+                : `${cohortName} GOLD: use the units shown below. Enter lymphocytes as a percentage (30 for 30%).`;
 
             // Generate new inputs
             container.innerHTML = fields.map(field => `
@@ -264,7 +273,7 @@
                            value="${inputValues[dataset][model][field.id] ?? ''}"
                            placeholder="Enter ${field.label}">
                     <div class="reference-range">
-                        ${field.unit} | Normal: ${field.range}
+                        ${field.unit}${field.range ? ` | Reference: ${field.range}` : ''}
                     </div>
                 </div>
             `).join('');
