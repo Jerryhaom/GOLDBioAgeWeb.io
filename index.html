@@ -3,196 +3,203 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#163e35">
+    <meta name="description" content="Calculate GOLD and Light biological age using routine biomarkers and the NHANES or UK Biobank coefficients.">
     <title>GOLD BioAge Calculator</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         :root {
-            --primary: #2c3e50;
-            --secondary: #3498db;
-            --accent: #e74c3c;
+            color-scheme: light;
+            --ink: #203c35;
+            --muted: #60726b;
+            --green: #246653;
+            --deep: #163e35;
+            --gold: #b58a40;
+            --line: #dfe5dd;
+            --paper: #f6f7f2;
+            --white: #ffffff;
         }
-
-        body {
-            background: linear-gradient(135deg, #f4f8fb, #eaf2f8);
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            min-height: 100vh;
+        * { box-sizing: border-box; }
+        body { margin: 0; background: var(--paper); color: var(--ink); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 15px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+        a { color: var(--green); text-underline-offset: 4px; }
+        button, input, select { font: inherit; }
+        button, select { cursor: pointer; }
+        button, a, input, select, summary { -webkit-tap-highlight-color: transparent; }
+        :focus-visible { outline: 3px solid #b58a40; outline-offset: 4px; }
+        .shell { width: min(1160px, calc(100% - 64px)); margin-inline: auto; }
+        .skip-link { position: absolute; top: -80px; left: 20px; padding: 10px 18px; background: white; z-index: 5; }
+        .skip-link:focus { top: 12px; }
+        .site-header { border-bottom: 1px solid var(--line); }
+        .header-inner { min-height: 84px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+        .brand { display: inline-flex; align-items: center; gap: 12px; color: var(--ink); text-decoration: none; font-size: 19px; font-weight: 650; letter-spacing: -.5px; }
+        .brand-mark { display: grid; place-items: center; width: 38px; height: 38px; background: var(--deep); color: #ead4a7; border-radius: 50%; font: 25px Georgia, serif; }
+        .brand span:last-child { font-weight: 400; }
+        .nav-links { display: flex; align-items: center; gap: 28px; font-size: 13px; font-weight: 600; }
+        .nav-links a { color: var(--muted); text-decoration: none; }
+        .nav-links a:hover { color: var(--green); text-decoration: underline; }
+        .nav-links .active { color: var(--ink); }
+        .hero { padding: 54px 0 36px; display: flex; justify-content: space-between; align-items: end; gap: 32px; }
+        .eyebrow { color: #796032; font-size: 11px; font-weight: 700; letter-spacing: 1.8px; text-transform: uppercase; margin: 0 0 12px; }
+        h1 { margin: 0; color: var(--deep); font: 48px/1.13 Georgia, "Times New Roman", serif; letter-spacing: -1.8px; }
+        .intro { max-width: 650px; margin: 17px 0 0; color: var(--muted); font-size: 16px; }
+        .hero-caption { border-left: 2px solid #c7ad7c; padding-left: 17px; flex: 0 0 200px; color: var(--muted); font-size: 13px; }
+        .hero-caption strong { display: block; color: var(--ink); font-weight: 600; margin-bottom: 3px; }
+        .workspace { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 24px; align-items: start; padding-bottom: 46px; }
+        .calculator-panel { background: var(--white); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; box-shadow: 0 5px 20px #1d433408; }
+        .panel-section { padding: 28px 32px; }
+        .model-section { border-bottom: 1px solid var(--line); background: #fcfdfb; }
+        .section-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 20px; }
+        .section-title { display: flex; align-items: center; gap: 10px; }
+        .step { display: grid; place-items: center; width: 25px; height: 25px; border: 1px solid #dce4dc; border-radius: 50%; color: var(--green); font-size: 11px; font-weight: 700; }
+        h2 { margin: 0; font-size: 16px; font-weight: 650; letter-spacing: -.2px; }
+        .section-meta { color: var(--muted); font-size: 12px; }
+        .version-switcher { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+        .control-label { display: block; font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: 7px; }
+        select { width: 100%; padding: 11px 36px 11px 13px; border: 1px solid #cbd7cd; border-radius: 7px; background: white; color: var(--ink); font-size: 14px; min-height: 46px; }
+        #modelNote { margin: 18px 0 0; border-left: 2px solid #c9b283; padding-left: 12px; font-size: 12px; color: #5e6c61; line-height: 1.65; }
+        .input-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 22px; }
+        .input-group { min-width: 0; }
+        .input-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 7px; }
+        .input-wrap { display: flex; align-items: center; border: 1px solid #d6dfd7; border-radius: 7px; background: #fff; transition: border-color .15s, box-shadow .15s; }
+        .input-wrap:focus-within { border-color: var(--green); box-shadow: 0 0 0 3px #24665312; }
+        .input-wrap input { width: 100%; min-width: 0; height: 45px; border: 0; padding: 10px 12px; border-radius: 7px; background: transparent; color: var(--ink); font-variant-numeric: tabular-nums; }
+        .input-wrap input:focus { outline: none; }
+        input::placeholder { color: #a0aba3; opacity: 1; }
+        .input-unit { flex-shrink: 0; padding-right: 12px; color: #66766e; font-size: 12px; white-space: nowrap; }
+        .reference-range { color: #66766e; font-size: 11px; margin: 5px 0 0; }
+        .form-actions { margin-top: 26px; }
+        .calculate-button { display: flex; align-items: center; justify-content: center; gap: 14px; width: 100%; min-height: 51px; padding: 12px 18px; border: 1px solid var(--green); border-radius: 8px; background: var(--green); color: white; font-size: 14px; font-weight: 600; transition: background .15s, transform .15s; }
+        .calculate-button:hover { background: var(--deep); }
+        .calculate-button:active { transform: translateY(1px); }
+        .calculate-button svg { width: 18px; height: 18px; }
+        .sidebar { display: grid; gap: 20px; position: sticky; top: 24px; }
+        .result-card { position: relative; overflow: hidden; background: var(--deep); color: #f4f6ec; padding: 30px 28px; border-radius: 16px; }
+        .result-card::before { content: ""; position: absolute; width: 180px; height: 180px; border: 1px solid #ffffff0b; border-radius: 50%; right: -82px; top: -70px; pointer-events: none; }
+        .result-eyebrow { color: #d5c08e; margin: 0 0 20px; font-size: 11px; font-weight: 600; letter-spacing: 1.6px; text-transform: uppercase; }
+        .result-card h2 { color: #eff4e9; font-size: 19px; font-weight: 500; }
+        .result-model { display: inline-block; font-size: 11px; color: #cfdfd4; margin-top: 10px; }
+        .result-display { display: flex; align-items: baseline; gap: 12px; padding: 24px 0 22px; min-height: 136px; }
+        #bioAgeResult { font: 76px/1 Georgia, serif; letter-spacing: -3px; color: #afc1b4; font-variant-numeric: lining-nums tabular-nums; }
+        #resultSection.show #bioAgeResult { color: #f0ddb0; }
+        .result-unit { font-size: 14px; color: #bbcec1; }
+        #resultStatus { border-top: 1px solid #ffffff24; padding-top: 18px; margin: 0; min-height: 64px; font-size: 12px; line-height: 1.75; color: #c4d5c9; }
+        .resource-card { padding: 24px; border: 1px solid var(--line); border-radius: 13px; background: #fdfefa; }
+        .resource-card h2 { font-size: 13px; margin-bottom: 10px; }
+        .resource-link { display: flex; justify-content: space-between; gap: 12px; padding: 11px 0; border-bottom: 1px solid #e7ebe3; text-decoration: none; color: #4c6659; font-size: 12px; }
+        .resource-link:last-child { border-bottom: 0; padding-bottom: 0; }
+        .resource-link:hover { color: var(--green); text-decoration: underline; }
+        .resource-link span { color: #7c8c7d; }
+        .reference-section { border-top: 1px solid var(--line); padding: 27px 0; display: grid; grid-template-columns: 1fr 1.1fr; gap: 60px; color: var(--muted); font-size: 12px; }
+        .reference-section h2 { font-size: 12px; color: var(--ink); margin-bottom: 8px; }
+        .reference-section p { margin: 0; }
+        .reference-section summary { cursor: pointer; color: var(--ink); font-weight: 600; }
+        .abbreviations { display: grid; grid-template-columns: auto 1fr; gap: 5px 16px; margin: 12px 0 0; }
+        .abbreviations dt { font-weight: 600; color: var(--ink); }
+        .abbreviations dd { margin: 0; }
+        .site-footer { display: flex; justify-content: space-between; gap: 20px; padding: 20px 0 30px; border-top: 1px solid var(--line); color: #657168; font-size: 11px; }
+        .site-footer a { color: #5f7066; text-decoration: none; }
+        @media (min-width: 1400px) { .hero { padding-top: 64px; } }
+        @media (max-width: 900px) {
+            .workspace { grid-template-columns: minmax(0, 1fr) 285px; gap: 18px; }
+            .panel-section { padding: 24px; }
+            .hero-caption { display: none; }
+            .result-card { padding: 25px; }
         }
-
-        .calculator-container {
-            max-width: 1200px;
-            margin: 2rem auto;
-            padding: 2rem;
-            background: rgba(255,255,255,0.95);
-            border-radius: 20px;
-            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.3);
+        @media (max-width: 740px) {
+            .shell { width: min(580px, calc(100% - 36px)); }
+            .header-inner { min-height: 72px; gap: 14px; }
+            .brand { font-size: 17px; }
+            .brand-mark { width: 32px; height: 32px; font-size: 22px; }
+            .nav-links { gap: 16px; font-size: 12px; }
+            .nav-links .active { display: none; }
+            .hero { padding: 34px 0 28px; }
+            h1 { font-size: 39px; letter-spacing: -1.3px; }
+            .intro { font-size: 14px; }
+            .input-wrap input { font-size: 16px; }
+            .eyebrow { font-size: 9px; letter-spacing: 1.4px; }
+            .workspace { grid-template-columns: minmax(0, 1fr); gap: 20px; padding-bottom: 28px; }
+            .sidebar { position: static; }
+            .result-display { padding: 20px 0; min-height: auto; }
+            #resultStatus { min-height: auto; }
+            .reference-section { grid-template-columns: 1fr; gap: 24px; }
         }
-
-        .input-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 1.2rem;
-            margin: 2rem 0;
+        @media (max-width: 420px) {
+            .shell { width: calc(100% - 28px); }
+            .nav-links { gap: 12px; font-size: 11px; }
+            .brand { gap: 8px; }
+            h1 { font-size: 35px; }
+            .panel-section { padding: 22px 18px; }
+            .version-switcher { gap: 12px; }
+            select { padding-left: 10px; padding-right: 16px; font-size: 12px; }
+            .input-grid { gap: 17px 14px; }
+            .input-unit { font-size: 10px; padding-right: 8px; }
+            .input-wrap input { padding-left: 10px; padding-right: 5px; }
+            .input-group label { font-size: 12px; }
+            .section-meta { font-size: 11px; }
+            .site-footer { flex-wrap: wrap; gap: 8px; }
         }
-
-        .input-group {
-            position: relative;
-        }
-
-        .input-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            color: var(--primary);
-        }
-
-        .input-group input {
-            width: 100%;
-            padding: 0.8rem;
-            border: 2px solid #dfe6e9;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .input-group input:focus {
-            border-color: var(--secondary);
-            box-shadow: 0 0 0 3px rgba(52,152,219,0.2);
-        }
-
-        .reference-range {
-            font-size: 0.85rem;
-            color: #7f8c8d;
-            margin-top: 0.4rem;
-        }
-
-        #resultSection {
-            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-top: 2rem;
-            opacity: 0;
-            transform: translateY(10px);
-            transition: all 0.4s ease;
-        }
-
-        #resultSection.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .version-switcher {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-
-        .version-switcher select {
-            width: 80%;
-            padding: 0.8rem;
-            border: 2px solid var(--primary);
-            border-radius: 8px;
-            background: white;
-            font-weight: 500;
-        }
-
-        .references {
-            margin-top: 4rem;
-            padding: 3rem;
-            background: rgba(255,255,255,0.95);
-            border-radius: 20px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
-            backdrop-filter: blur(15px);
-        }
-
-        .references h2 {
-            color: var(--primary);
-            border-bottom: 2px solid var(--secondary);
-            padding-bottom: 1rem;
-            margin-bottom: 2rem;
-            font-size: 1.5rem;
-            text-align: center;
-        }
-
-        .references ol {
-            padding-left: 1.2rem;
-            max-width: 900px;
-            margin: 0 auto;
-            line-height: 1.7;
-            list-style: none; /* 移除默认编号 */
-        }
-
-        .references li {
-            margin-bottom: 1.2rem;
-            position: relative;
-            padding-left: 1.8rem;
-            font-size: 1rem;
-        }
-
-        .references li::before {
-            content: "";
-            position: absolute;
-            left: 0;
-            width: 8px;
-            height: 8px;
-            background-color: var(--secondary);
-            border-radius: 50%;
-            top: 0.3rem;
-        }
-
-
+        @media (max-width: 350px) { .input-grid, .version-switcher { grid-template-columns: 1fr; } .nav-links { gap: 8px; } }
+        @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; scroll-behavior: auto !important; } }
     </style>
 </head>
 <body>
-    <div class="calculator-container">
-        <h1 class="text-center mb-4" style="color: var(--primary);">GOLD BioAge Calculator</h1>
-        
-        <!-- Version Selectors -->
-        <div class="version-switcher">
-            <select id="datasetSelect" class="form-select" aria-label="Coefficient dataset">
-                <option value="nhanes">NHANES Dataset</option>
-                <option value="ukb">UK Biobank Dataset</option>
-            </select>
-            <select id="modelSelect" class="form-select" aria-label="BioAge model">
-                <option value="gold">GOLD Model</option>
-                <option value="light">LIGHT Model</option>
-            </select>
+    <a class="skip-link" href="#calculator">Skip to calculator</a>
+    <header class="site-header">
+        <div class="shell header-inner">
+            <a class="brand" href="./" aria-label="GOLD BioAge home"><span class="brand-mark" aria-hidden="true">G</span><span><strong>GOLD</strong> BioAge</span></a>
+            <nav class="nav-links" aria-label="Main navigation">
+                <a class="active" href="#calculator" aria-current="page">Calculator</a>
+                <a href="https://github.com/Jerryhaom/GOLDBioAgeWeb.io/blob/main/README.md">Coefficients</a>
+                <a href="https://github.com/Jerryhaom/GOLDBioAge">R package ↗</a>
+            </nav>
         </div>
-
-        <p id="modelNote" aria-live="polite"></p>
-        <p><a href="https://github.com/Jerryhaom/GOLDBioAgeWeb.io/blob/main/README.md">Coefficient tables and input units</a> · <a href="https://github.com/Jerryhaom/GOLDBioAge/blob/main/docs/mathematics-and-code.md">Equations and R calculation</a></p>
-
-        <!-- Dynamic Input Fields -->
-        <form id="bioAgeForm">
-            <div class="input-grid" id="inputContainer"></div>
-            <button type="submit" class="btn btn-primary w-100 py-2" 
-                    style="background: var(--secondary); border: none; padding: 1rem;">
-                Calculate Biological Age
-            </button>
-        </form>
-
-        <!-- Results Section -->
-        <div id="resultSection">
-            <h3 class="text-center mb-3" style="color: var(--accent);">Analysis Result</h3>
-            <div class="result-display text-center">
-                <span class="h1" style="color: var(--primary);" id="bioAgeResult">--</span>
-                <span class="h4" style="color: var(--secondary);">years</span>
+    </header>
+    <main class="shell">
+        <section class="hero" aria-labelledby="pageTitle">
+            <div>
+                <p class="eyebrow">Gompertz law-based biological age</p>
+                <h1 id="pageTitle">GOLD BioAge Calculator</h1>
+                <p class="intro">Estimate biological age from routine biomarkers.<br>Choose a cohort and model, then enter your measurements.</p>
             </div>
+            <div class="hero-caption"><strong>From biomarkers to years</strong>GOLD &amp; Light BioAge<br>NHANES &amp; UK Biobank</div>
+        </section>
+        <div class="workspace" id="calculator">
+            <section class="calculator-panel" aria-label="Biological age calculator">
+                <div class="panel-section model-section">
+                    <div class="section-heading"><div class="section-title"><span class="step" aria-hidden="true">01</span><h2>Choose your model</h2></div></div>
+                    <div class="version-switcher">
+                        <div><label class="control-label" for="datasetSelect">Coefficient dataset</label><select id="datasetSelect"><option value="nhanes">NHANES</option><option value="ukb">UK Biobank</option></select></div>
+                        <div><label class="control-label" for="modelSelect">BioAge model</label><select id="modelSelect"><option value="gold">GOLD · 9 biomarkers</option><option value="light">Light · 3 biomarkers</option></select></div>
+                    </div>
+                    <p id="modelNote" aria-live="polite"></p>
+                </div>
+                <form id="bioAgeForm" class="panel-section">
+                    <div class="section-heading"><div class="section-title"><span class="step" aria-hidden="true">02</span><h2>Your measurements</h2></div><span class="section-meta" id="markerCount">10 measurements</span></div>
+                    <div class="input-grid" id="inputContainer"></div>
+                    <div class="form-actions"><button type="submit" class="calculate-button">Calculate biological age <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 12h15M13 5l7 7-7 7"/></svg></button></div>
+                </form>
+            </section>
+            <aside class="sidebar" aria-label="Result and resources">
+                <section id="resultSection" class="result-card" aria-live="polite" aria-atomic="true" aria-labelledby="resultTitle">
+                    <p class="result-eyebrow">Your calculation</p>
+                    <h2 id="resultTitle">Biological age</h2>
+                    <span class="result-model" id="resultModel">NHANES · GOLD</span>
+                    <div class="result-display"><output id="bioAgeResult" form="bioAgeForm">—</output><span class="result-unit">years</span></div>
+                    <p id="resultStatus">Enter all measurements and select “Calculate biological age” to see your result.</p>
+                </section>
+                <section class="resource-card" aria-labelledby="resourcesTitle">
+                    <h2 id="resourcesTitle">Explore the method</h2>
+                    <a class="resource-link" href="https://github.com/Jerryhaom/GOLDBioAgeWeb.io/blob/main/README.md">Coefficients &amp; input units <span aria-hidden="true">↗</span></a>
+                    <a class="resource-link" href="https://github.com/Jerryhaom/GOLDBioAge/blob/main/docs/mathematics-and-code.md">Equations &amp; R examples <span aria-hidden="true">↗</span></a>
+                    <a class="resource-link" href="https://doi.org/10.1002/advs.202501765">Read the publication <span aria-hidden="true">↗</span></a>
+                </section>
+            </aside>
         </div>
-    </div>
-
-    <div class="references">
-        <h2>Abbreviations & References</h2>
-        <ol>
-            <li>MCV: mean cell volume, RDW: red cell distribution width, ALP: alkaline phosphatase, WBC: white blood cell count, GGT: gamma glutamyl transferase, CRP: C-reactive protein.</li>
-            <li>Citation: Hao M. et al. Gompertz Law-Based Biological Age (GOLD BioAge): A Simple and Practical Measurement of Biological Ageing to Capture Morbidity and Mortality Risks. <em>Advanced Science</em> (2025), e01765. <a href="https://doi.org/10.1002/advs.202501765">doi:10.1002/advs.202501765</a>.</li>
-            <li>More information: <a href="https://github.com/Jerryhaom/GOLDBioAgeWeb.io">calculator repository</a> · <a href="https://github.com/Jerryhaom/GOLDBioAge">R package and tutorials</a>.</li>
-            <li>Email: haombio@gmail.com  </li>
-        </ol>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <section class="reference-section" aria-label="References and abbreviations">
+            <div><h2>The science behind GOLD BioAge</h2><p>Hao M. et al. Gompertz Law-Based Biological Age (GOLD BioAge): A Simple and Practical Measurement of Biological Ageing to Capture Morbidity and Mortality Risks. <em>Advanced Science</em> (2025), e01765. <a href="https://doi.org/10.1002/advs.202501765">View publication ↗</a></p></div>
+            <details><summary>Biomarker abbreviations</summary><dl class="abbreviations"><dt>MCV</dt><dd>Mean cell volume</dd><dt>RDW</dt><dd>Red cell distribution width</dd><dt>ALP</dt><dd>Alkaline phosphatase</dd><dt>WBC</dt><dd>White blood cell count</dd><dt>GGT</dt><dd>Gamma glutamyl transferase</dd><dt>CRP</dt><dd>C-reactive protein</dd></dl></details>
+        </section>
+        <footer class="site-footer"><span>GOLD BioAge · A tool for aging research</span><div><a href="https://github.com/Jerryhaom/GOLDBioAgeWeb.io">Source code</a> &nbsp;·&nbsp; <a href="mailto:haombio@gmail.com">Contact</a></div></footer>
+    </main>
     <script>
         // Configuration Objects
         const formulas = {
@@ -238,7 +245,8 @@
         let activeModel = document.getElementById('modelSelect').value;
 
         function clearResult() {
-            document.getElementById('bioAgeResult').textContent = '--';
+            document.getElementById('bioAgeResult').textContent = '—';
+            document.getElementById('resultStatus').textContent = 'Enter all measurements and select “Calculate biological age” to see your result.';
             document.getElementById('resultSection').classList.remove('show');
         }
 
@@ -258,6 +266,8 @@
             activeModel = model;
             clearResult();
             const cohortName = dataset === 'nhanes' ? 'NHANES' : 'UK Biobank';
+            document.getElementById('resultModel').textContent = `${cohortName} · ${model === 'gold' ? 'GOLD' : 'Light'}`;
+            document.getElementById('markerCount').textContent = `${fields.length} measurements`;
             document.getElementById('modelNote').textContent = model === 'light'
                 ? 'Enter the raw CRP concentration (mg/dL). No manual logarithm is needed; ' +
                   'the calculator automatically handles unit conversion and log transformation.'
@@ -267,12 +277,13 @@
             container.innerHTML = fields.map(field => `
                 <div class="input-group">
                     <label for="${field.id}">${field.label}</label>
-                    <input type="number" step="any" min="0" ${field.id === 'lym' ? 'max="100"' : ''} required id="${field.id}"
-                           value="${inputValues[dataset][model][field.id] ?? ''}"
-                           placeholder="Enter ${field.label}">
-                    <div class="reference-range">
-                        ${field.unit}${field.range ? ` | Reference: ${field.range}` : ''}
+                    <div class="input-wrap">
+                        <input type="number" inputmode="decimal" step="any" min="0" ${field.id === 'lym' ? 'max="100"' : ''} required id="${field.id}"
+                               aria-describedby="${field.id}-unit${field.range ? ` ${field.id}-range` : ''}"
+                               value="${inputValues[dataset][model][field.id] ?? ''}" placeholder="—">
+                        <span class="input-unit" id="${field.id}-unit">${field.unit}</span>
                     </div>
+                    ${field.range ? `<p class="reference-range" id="${field.id}-range">Reference: ${field.range}</p>` : ''}
                 </div>
             `).join('');
         }
@@ -315,6 +326,7 @@
                 const result = formulas[dataset][model](values);
                 if (!Number.isFinite(result)) return;
                 document.getElementById('bioAgeResult').textContent = result.toFixed(1);
+                document.getElementById('resultStatus').textContent = 'Calculated using the selected cohort and model coefficients.';
                 document.getElementById('resultSection').classList.add('show');
             }
         }
