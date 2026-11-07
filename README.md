@@ -45,8 +45,7 @@ Use the units listed in Table 1 and enter LYM% as a percentage (for example, 30 
 | Log CRP     | Inflammation | mg/dL    | 5.7305                | mg/L   | 4.1689              | mg/L   | 4.2983                  |
 | Constant (β0) |             |          | -13.5298              |        | -20.1395            |        | -16.7562                |
 
-Due to its non-normal distribution, CRP was log-transformed. Log CRP was calculated as ln(CRP + 1). <br>
-Note that CRP units differ: mg/dL in NHANES versus mg/L in UKB and CHARLS. Choose a cohort-specific model with its complete coefficient set, transformation, and intercept; an assay label alone does not establish transportability to a new population.
+Here, `log(CRP)` denotes the natural logarithm `ln(CRP + 1)`, calculated in R as `log1p(CRP)`. CRP must be expressed in **mg/dL for NHANES** and **mg/L for UKB and CHARLS** before taking the logarithm.
 
 The web calculator accepts CRP in mg/dL for both datasets and converts it to mg/L (×10) before applying the UKB Light formula.
 
@@ -83,7 +82,7 @@ The following are the population characteristics in the study.
 | CRP, mean (SD), mg/L         | 4.07 (5.67)              | 2.61 (4.36)             |
 | ln(1 + CRP in mg/L), mean (SD), unitless         | 1.26 (0.79)              | 1.00 (0.65)             |
 
-The descriptive log values in this table use ln(1 + CRP in mg/L), a unitless transformed value. For **NHANES Light scoring**, instead use ln(1 + CRP in mg/dL), as specified in Table 2. These are different numerical variables. <br>
+This descriptive table uses CRP in mg/L before taking the logarithm; NHANES Light scoring uses mg/dL, as specified in Table 2. <br>
 
 <br>
 
@@ -101,7 +100,7 @@ The descriptive log values in this table use ln(1 + CRP in mg/L), a unitless tra
 | CRP, mean (SD), mg/L         | 2.72 (6.96)             | 3.28 (7.11)             | 4.03 (8.39)             |
 | ln(1 + CRP in mg/L), mean (SD), unitless         | 0.94 (0.68)             | 1.00 (0.78)             | 1.29 (0.64)             |
 
-The descriptive log values use ln(1 + CRP in mg/L); the transformed values are unitless. <br>
+This descriptive table uses CRP in mg/L before taking the logarithm. <br>
 
 
 **Data consistency note for Supplementary Table 2:** the supplied CHARLS sex counts sum to 17,154, whereas the column total is 17,163. The supplied RuLAS sex counts sum to 1,787, whereas the column total is 1,785; the percentages also do not reproduce those counts using that total. These source summary values are retained pending confirmation from the underlying cohort records. They do not enter the BioAge calculation. The table must not be treated as an independently verified participant count.

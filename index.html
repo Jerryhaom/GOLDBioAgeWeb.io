@@ -259,10 +259,11 @@
             clearResult();
             const cohortName = dataset === 'nhanes' ? 'NHANES' : 'UK Biobank';
             document.getElementById('modelNote').textContent = model === 'light'
-                ? `${cohortName} Light: enter raw CRP in mg/dL, without taking a logarithm. ` +
+                ? 'log(CRP) means ln(CRP + 1), the natural logarithm. ' +
+                  'NHANES uses CRP in mg/dL; UKB uses mg/L. Enter raw CRP in mg/dL here. ' +
                   (dataset === 'ukb'
-                    ? 'The calculator converts CRP to mg/L (×10), then uses ln(1 + CRP).'
-                    : 'The calculator uses ln(1 + CRP in mg/dL).')
+                    ? 'The calculator converts it to mg/L (×10) before taking the logarithm.'
+                    : 'The calculator takes the logarithm automatically.')
                 : `${cohortName} GOLD: use the units shown below. Enter lymphocytes as a percentage (30 for 30%).`;
 
             // Generate new inputs

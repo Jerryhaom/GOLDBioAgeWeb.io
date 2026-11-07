@@ -23,9 +23,9 @@ const labels = { age: 'Age', creat: 'CREA', glucose_mmol: 'GLU', mcv: 'MCV', rdw
 function near(a, b, tol = 1e-9) { assert.ok(Math.abs(a - b) < tol, `${a} != ${b}`); }
 function rows(text) { return text.split('\n').filter(l => l.startsWith('|')).map(l => l.split('|').slice(1, -1).map(c => c.trim())); }
 const goldR = rows(rTable.split('**Table 1.')[1].split('For NHANES,')[0]);
-const lightR = rows(rTable.split('**Table 2.')[1].split('The logarithm')[0]);
+const lightR = rows(rTable.split('**Table 2.')[1].split('## 4.')[0]);
 const goldWeb = rows(webTable.split('**Table 1.')[1].split('Table 1 displays')[0]);
-const lightWeb = rows(webTable.split('**Table 2.')[1].split('Due to its non-normal')[0]);
+const lightWeb = rows(webTable.split('**Table 2.')[1].split('**Supplementary Table 1.**')[0]);
 for (const x of reference) {
     const gold = x.model === 'gold';
     const datasetIndex = ['nhanes', 'ukb', 'charls'].indexOf(x.dataset);

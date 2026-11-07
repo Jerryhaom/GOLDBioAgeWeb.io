@@ -77,7 +77,7 @@ test('Table 1 agrees with each GOLD formula at four decimal places', () => {
 
 test('Table 2 agrees with both LIGHT formulas, using the correct raw CRP units', () => {
     const table = readFileSync(join(root, 'README.md'), 'utf8')
-        .split('**Table 2.**')[1].split('Due to its non-normal')[0];
+        .split('**Table 2.**')[1].split('**Supplementary Table 1.**')[0];
     const fields = { Age: 'age', CREA: 'crea', GLU: 'glu', 'Log CRP': 'crp' };
     const zero = { age: 0, crea: 0, glu: 0, crp: 0 };
     let checked = 0;
