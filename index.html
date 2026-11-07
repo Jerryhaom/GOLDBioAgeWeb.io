@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#173e72">
+    <meta name="theme-color" content="#355e91">
     <meta name="description" content="Calculate GOLD and Light biological age using routine biomarkers and the NHANES or UK Biobank coefficients.">
     <title>GOLD BioAge Calculator</title>
     <style>
@@ -11,11 +11,11 @@
             color-scheme: light;
             --ink: #1c3252;
             --muted: #596d87;
-            --primary: #2563b7;
-            --deep: #173e72;
+            --primary: #3972b8;
+            --deep: #355e91;
             --accent: #4a83ce;
             --line: #dce5f0;
-            --paper: #f3f6fc;
+            --paper: #f7f9fd;
             --white: #ffffff;
         }
         * { box-sizing: border-box; }
@@ -31,7 +31,7 @@
         .site-header { border-bottom: 1px solid var(--line); }
         .header-inner { min-height: 84px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
         .brand { display: inline-flex; align-items: center; gap: 12px; color: var(--ink); text-decoration: none; font-size: 19px; font-weight: 650; letter-spacing: -.5px; }
-        .brand-mark { display: grid; place-items: center; width: 38px; height: 38px; background: var(--deep); color: #d9eaff; border-radius: 50%; font: 25px Georgia, serif; }
+        .brand-mark { display: grid; place-items: center; width: 38px; height: 38px; background: var(--deep); color: #e4efff; border-radius: 50%; font: 25px Georgia, serif; }
         .brand span:last-child { font-weight: 400; }
         .nav-links { display: flex; align-items: center; gap: 28px; font-size: 13px; font-weight: 600; }
         .nav-links a { color: var(--muted); text-decoration: none; }
@@ -44,7 +44,7 @@
         .hero-caption { border-left: 2px solid #82a8dc; padding-left: 17px; flex: 0 0 200px; color: var(--muted); font-size: 13px; }
         .hero-caption strong { display: block; color: var(--ink); font-weight: 600; margin-bottom: 3px; }
         .workspace { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 24px; align-items: start; padding-bottom: 46px; }
-        .calculator-panel { background: var(--white); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; box-shadow: 0 5px 20px #173e720a; }
+        .calculator-panel { background: var(--white); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; box-shadow: 0 5px 20px #355e910a; }
         .panel-section { padding: 28px 32px; }
         .model-section { border-bottom: 1px solid var(--line); background: #f9fbfe; }
         .section-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 20px; }
@@ -60,7 +60,7 @@
         .input-group { min-width: 0; }
         .input-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 7px; }
         .input-wrap { display: flex; align-items: center; border: 1px solid #cfdbeb; border-radius: 7px; background: #fff; transition: border-color .15s, box-shadow .15s; }
-        .input-wrap:focus-within { border-color: var(--primary); box-shadow: 0 0 0 3px #2563b712; }
+        .input-wrap:focus-within { border-color: var(--primary); box-shadow: 0 0 0 3px #3972b812; }
         .input-wrap input { width: 100%; min-width: 0; height: 45px; border: 0; padding: 10px 12px; border-radius: 7px; background: transparent; color: var(--ink); font-variant-numeric: tabular-nums; }
         .input-wrap input:focus { outline: none; }
         input::placeholder { color: #8293ab; opacity: 1; }
@@ -74,14 +74,14 @@
         .sidebar { display: grid; gap: 20px; position: sticky; top: 24px; }
         .result-card { position: relative; overflow: hidden; background: var(--deep); color: #f2f7ff; padding: 30px 28px; border-radius: 16px; }
         .result-card::before { content: ""; position: absolute; width: 180px; height: 180px; border: 1px solid #ffffff0b; border-radius: 50%; right: -82px; top: -70px; pointer-events: none; }
-        .result-eyebrow { color: #aacdf8; margin: 0 0 20px; font-size: 11px; font-weight: 600; letter-spacing: 1.6px; text-transform: uppercase; }
+        .result-eyebrow { color: #c8defb; margin: 0 0 20px; font-size: 11px; font-weight: 600; letter-spacing: 1.6px; text-transform: uppercase; }
         .result-card h2 { color: #f2f7ff; font-size: 19px; font-weight: 500; }
-        .result-model { display: inline-block; font-size: 11px; color: #cadcf3; margin-top: 10px; }
+        .result-model { display: inline-block; font-size: 11px; color: #e0ebfa; margin-top: 10px; }
         .result-display { display: flex; align-items: baseline; gap: 12px; padding: 24px 0 22px; min-height: 136px; }
-        #bioAgeResult { font: 76px/1 Georgia, serif; letter-spacing: -3px; color: #a7bfdd; font-variant-numeric: lining-nums tabular-nums; }
-        #resultSection.show #bioAgeResult { color: #e1eeff; }
-        .result-unit { font-size: 14px; color: #bdd3ed; }
-        #resultStatus { border-top: 1px solid #ffffff24; padding-top: 18px; margin: 0; min-height: 64px; font-size: 12px; line-height: 1.75; color: #c7d9ef; }
+        #bioAgeResult { font: 76px/1 Georgia, serif; letter-spacing: -3px; color: #bed2ed; font-variant-numeric: lining-nums tabular-nums; }
+        #resultSection.show #bioAgeResult { color: #f1f7ff; }
+        .result-unit { font-size: 14px; color: #d7e6f8; }
+        #resultStatus { border-top: 1px solid #ffffff24; padding-top: 18px; margin: 0; min-height: 64px; font-size: 12px; line-height: 1.75; color: #dde9f9; }
         .resource-card { padding: 24px; border: 1px solid var(--line); border-radius: 13px; background: #fbfdff; }
         .resource-card h2 { font-size: 13px; margin-bottom: 10px; }
         .resource-link { display: flex; justify-content: space-between; gap: 12px; padding: 11px 0; border-bottom: 1px solid #e3ebf5; text-decoration: none; color: #4c6588; font-size: 12px; }
